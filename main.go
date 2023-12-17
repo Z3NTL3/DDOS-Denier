@@ -45,10 +45,12 @@ func main() {
 		}
 
 		init = true
-		go func() {
+		lookupCycle := make(chan int, 1)
+
+		go func(cyc chan int) {
 			load := cpu_load()
 
-			if load >= viper.GetFloat64("belowPercent") && !UAM_enabled {
+			if load >= viper.GetFloat64("activateAfter") && !UAM_enabled {
 				if err := c.UpdateZone(viper.GetString("UAM"), domain.Result[0].ID); err != nil {
 					logger.Printf("could not enable backend to under attack mode %s", err)
 				}
@@ -63,6 +65,10 @@ func main() {
 				UAM_enabled = false
 				logger.Printf("under attack mode deactivated because load is below percentage for %s", domain.Result[0].ID)
 			}
-		}()
+
+			cyc <- 1
+		}(lookupCycle)
+
+		<-lookupCycle
 	}
 }
