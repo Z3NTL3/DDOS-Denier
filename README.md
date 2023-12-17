@@ -1,7 +1,7 @@
 # DDOS-Denier
 Evaluates incoming server attacks determined by CPU load and automatically performs measures against those attacks. Intended for Cloudflare websites.
 
-Activate Cloudflare Under Attack Mode (UAM -DNS) when experiencing heavy CPU loads. Automatically disposal of UAM mode after the stop of an attack.
+Automatically activates Cloudflare Under Attack Mode (UAM -DNS) when experiencing heavy CPU loads. And disposes of it after the stop of an attack.
 
 <br>
 
