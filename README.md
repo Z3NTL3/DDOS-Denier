@@ -5,6 +5,8 @@ DDOS-Denier is a tool designed to evaluate incoming server attacks based on CPU 
 ## Showcase
 Check out the tool in action on [YouTube](https://www.youtube.com/shorts/rNjWS-z6vuE). 
 > Apparently YouTube has shut down the video
+> > **New video:**
+> > - https://streamable.com/jfzq3e
 
 **Note:** An upcoming update will make this tool fully modular, enhancing its flexibility and functionality.
 
@@ -12,3 +14,6 @@ Check out the tool in action on [YouTube](https://www.youtube.com/shorts/rNjWS-z
 
 ### Prerequisites
 Before using DDOS-Denier, make sure to set up the necessary configurations.
+
+#### Requires
+- API key Permissions for: ``All zones - Zone WAF:Edit, Zone WAF:Read, Zone Settings:Edit, Zone:Read, Zone:Edit``
