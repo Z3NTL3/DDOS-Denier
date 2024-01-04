@@ -6,7 +6,7 @@ DDOS-Denier is a tool designed to evaluate incoming server attacks based on CPU 
 Check out the tool in action on [YouTube](https://www.youtube.com/shorts/rNjWS-z6vuE). 
 > Apparently YouTube has shut down the video
 > > **New video:**
-> > - https://streamable.com/jfzq3e
+> > - [Video](https://gofile.io/d/QQ4l0x)
 
 **Note:** An upcoming update will make this tool fully modular, enhancing its flexibility and functionality.
 
