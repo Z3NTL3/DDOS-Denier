@@ -42,9 +42,10 @@ func main() {
 	for {
 		if init {
 			time.Sleep(time.Second * 2)
+		} else {
+			init = true
 		}
 
-		init = true
 		lookupCycle := make(chan int, 1)
 
 		go func(cyc chan int, isEnabled *bool) {
