@@ -53,14 +53,14 @@ func main() {
 
 			if load >= viper.GetFloat64("activateAfter") && !*isEnabled {
 				if err := c.UpdateZone(viper.GetString("UAM"), domain.Result[0].ID); err != nil {
-					logger.Printf("could not enable backend to under attack mode %s", err)
+					logger.Printf("failed activating UAM: %s", err)
 				}
 
 				*isEnabled = true
 				logger.Printf("under attack mode activated for %s", domain.Result[0].ID)
 			} else if load <= viper.GetFloat64("closeBelow") && *isEnabled {
 				if err := c.UpdateZone(viper.GetString("LOW"), domain.Result[0].ID); err != nil {
-					logger.Printf("could not modify to LOW mode %s", err)
+					logger.Printf("could not set UAM to low sensitivity: %s", err)
 				}
 
 				*isEnabled = false
