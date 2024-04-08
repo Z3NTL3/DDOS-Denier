@@ -11,7 +11,7 @@ import (
 
 type Client struct {
 	Token      string
-	HttpClient http.Client
+	HttpClient *http.Client
 	Headers    http.Header
 }
 
@@ -28,7 +28,7 @@ type (
 func New(token string) *Client {
 	return &Client{
 		Token:      token,
-		HttpClient: http.Client{},
+		HttpClient: &http.Client{},
 		Headers: http.Header{
 			"Authorization": []string{"Bearer " + token},
 			"Content-Type":  []string{"application/json"},
