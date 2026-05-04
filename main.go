@@ -25,8 +25,7 @@ func init() {
 		SetString("INFO")
 
 	styles.Levels[log.ErrorLevel] = style.
-		SetString("ERROR").
-		SetString("INFO")
+		SetString("ERROR")
 
 	log.SetStyles(styles)
 	filesystem.ParseEnv()
