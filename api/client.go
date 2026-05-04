@@ -55,7 +55,7 @@ func (c *Client) VerifyToken() error {
 		if err != nil {
 			return err
 		}
-		return errors.New(fmt.Sprintf("[Token Not Valid] %s", string(b)))
+		return fmt.Errorf("[Token Not Valid] %s", string(b))
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func (c *Client) GetZone(domain string) (*Zone, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Cloudflare API returned with failure response: %s", resp.Status))
+		return nil, fmt.Errorf("Cloudflare API returned with failure response: %s", resp.Status)
 	}
 
 	model := &Zone{}
@@ -86,7 +86,7 @@ func (c *Client) GetZone(domain string) (*Zone, error) {
 	}
 
 	if !model.Success {
-		return nil, errors.New(fmt.Sprintf("Cloudflare API returned with failure response: %s", resp.Status))
+		return nil, fmt.Errorf("Cloudflare API returned with failure response: %s", resp.Status)
 	}
 
 	return model, err
@@ -104,7 +104,7 @@ func (c *Client) UpdateZone(mode string, zone_id string) error {
 
 	rd := bytes.NewReader(jsonRaw)
 
-	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/settings/security_level", zone_id), rd)
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/%s/settings/security_level", ListZoneEndpoint, zone_id), rd)
 	if err != nil {
 		return err
 	}

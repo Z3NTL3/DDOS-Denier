@@ -1,75 +1,56 @@
 package main
 
 import (
-	"log"
-	"os"
 	"time"
 
-	"github.com/shirou/gopsutil/cpu"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/viper"
 	"github.com/z3ntl3/cf-uam-engine/api"
-	"github.com/z3ntl3/cf-uam-engine/filesystem"
+	filesystem "github.com/z3ntl3/cf-uam-engine/config"
+	"github.com/z3ntl3/cf-uam-engine/worker"
 )
 
-func cpu_load() float64 {
-	avg, err := cpu.Percent(time.Second, false)
-	if err != nil {
-		log.Fatal(err)
-	}
+func init() {
+	log.SetTimeFormat(time.DateTime)
+	log.SetReportCaller(true)
 
-	return avg[0]
+	style := lipgloss.NewStyle().
+		Padding(0, 1, 0, 1).
+		Foreground(lipgloss.Color("0"))
+
+	styles := log.DefaultStyles()
+	styles.Levels[log.InfoLevel] = style.
+		Background(lipgloss.Color("117")).
+		SetString("INFO")
+
+	styles.Levels[log.ErrorLevel] = style.
+		SetString("ERROR").
+		SetString("INFO")
+
+	log.SetStyles(styles)
+	filesystem.ParseEnv()
 }
 
-var UAM_enabled = false
-
 func main() {
-	filesystem.ParseEnv()
+	var CONTROLLER = worker.NewController()
 
-	logger := log.New(os.Stdout, "[LOG]: ", log.Ltime)
-	c := api.New(viper.GetString("apiKey"))
+	c := api.New(viper.GetString("api_key"))
 	if err := c.VerifyToken(); err != nil {
 		log.Fatal(err)
 	}
-	logger.Printf("token is valid")
+	log.Info("token is valid")
 
 	domain, err := c.GetZone(viper.GetString("domain"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	logger.Printf("successfully found zone[%s]", domain.Result[0].ID)
-
-	init := false
-	for {
-		if init {
-			time.Sleep(time.Second * 2)
-		} else {
-			init = true
-		}
-
-		lookupCycle := make(chan int, 1)
-
-		go func(cyc chan int, isEnabled *bool) {
-			load := cpu_load()
-
-			if load >= viper.GetFloat64("activateAfter") && !*isEnabled {
-				if err := c.UpdateZone(viper.GetString("UAM"), domain.Result[0].ID); err != nil {
-					logger.Printf("failed activating UAM: %s", err)
-				}
-
-				*isEnabled = true
-				logger.Printf("under attack mode activated for %s", domain.Result[0].ID)
-			} else if load <= viper.GetFloat64("closeBelow") && *isEnabled {
-				if err := c.UpdateZone(viper.GetString("LOW"), domain.Result[0].ID); err != nil {
-					logger.Printf("could not set UAM to low sensitivity: %s", err)
-				}
-
-				*isEnabled = false
-				logger.Printf("under attack mode deactivated because load is below percentage for %s", domain.Result[0].ID)
-			}
-
-			cyc <- 1
-		}(lookupCycle, &UAM_enabled)
-
-		<-lookupCycle
+	if len(domain.Result) == 0 {
+		log.Fatalf("zone was not found for domain: %s", domain)
 	}
+
+	log.Infof("successfully found zone[%s]", domain.Result[0].ID)
+
+	CONTROLLER.Client = c
+	CONTROLLER.Loop(domain.Result[0].ID)
 }
