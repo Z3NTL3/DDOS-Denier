@@ -80,10 +80,10 @@ type Settings struct {
 }
 
 func cpu_load() float64 {
-	_, err := cpu.Percent(0, false)
+	avg, err := cpu.Percent(0, false)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return 90.00
+	return avg[0]
 }
